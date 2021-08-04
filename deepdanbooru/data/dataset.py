@@ -8,7 +8,7 @@ def load_tags(tags_path):
         return tags
 
 
-def load_image_records(sqlite_path, minimum_tag_count):
+def load_image_records(sqlite_path, minimum_tag_count, use_validation=False):
     if not os.path.exists(sqlite_path):
         raise Exception(f'SQLite database is not exists : {sqlite_path}')
 
@@ -19,8 +19,8 @@ def load_image_records(sqlite_path, minimum_tag_count):
     image_folder_path = os.path.join(os.path.dirname(sqlite_path), 'images')
 
     cursor.execute(
-        "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (tag_count_general >= ?) ORDER BY id",
-        (minimum_tag_count,))
+        "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (tag_count_general >= ?) AND `validation` = ? ORDER BY id",
+        (minimum_tag_count, 1 if use_validation else 0 ))
 
     rows = cursor.fetchall()
 

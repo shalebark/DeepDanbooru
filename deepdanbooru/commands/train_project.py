@@ -2,6 +2,7 @@ import os
 import random
 import time
 import datetime
+import math
 
 import tensorflow as tf
 
@@ -122,7 +123,16 @@ def train_project(project_path, source_model):
         print(f'Model : {model.input_shape} -> {model.output_shape}')
 
     model.compile(optimizer=optimizer, loss=tf.keras.losses.BinaryCrossentropy(),
-                  metrics=[tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
+                  metrics=[
+                      tf.keras.metrics.Precision(),
+                      tf.keras.metrics.Recall(),
+                    #   tf.keras.metrics.TruePositives(),
+                    #   tf.keras.metrics.FalsePositives(),
+                    #   tf.keras.metrics.TrueNegatives(),
+                    #   tf.keras.metrics.FalseNegatives()
+                    #   tf.keras.metrics.SpecificityAtSensitivity(0.8)
+                    ]
+                )
 
     print(f'Loading database ... ')
     image_records = dd.data.load_image_records(
@@ -208,6 +218,10 @@ def train_project(project_path, source_model):
                     delta_time = current_time - last_time
                     step_metric_precision = step_result[1]
                     step_metric_recall = step_result[2]
+                    step_metric_true_positives = 0 # step_result[1]
+                    step_metric_false_positives = 0 # step_result[4]
+                    step_metric_true_negatives = 0 # step_result[5]
+                    step_metric_false_negatives = 0 # step_result[6]
                     if step_metric_precision + step_metric_recall > 0.0:
                         step_metric_f1_score = 2.0 * \
                             (step_metric_precision * step_metric_recall) / \
@@ -225,7 +239,7 @@ def train_project(project_path, source_model):
                     eta_datetime_string = eta_datetime.strftime(
                         '%Y-%m-%d %H:%M:%S')
                     print(
-                        f'Epoch[{int(used_epoch)}] Loss={average_loss:.6f}, P={step_metric_precision:.6f}, R={step_metric_recall:.6f}, F1={step_metric_f1_score:.6f}, Speed = {samples_per_seconds:.1f} samples/s, {progress:.2f} %, ETA = {eta_datetime_string}')
+                        f'Epoch[{int(used_epoch)}] Loss={average_loss:.6f}, P={step_metric_precision:.6f}, R={step_metric_recall:.6f}, TP={step_metric_true_positives:.6f}, FP={step_metric_false_positives:.6f}, TN={step_metric_true_negatives:.6f} FN={step_metric_false_negatives:.6f}, F1={step_metric_f1_score:.6f}, Speed = {samples_per_seconds:.1f} samples/s, {progress:.2f} %, ETA = {eta_datetime_string}')
 
                     # reset for next logging
                     model.reset_metrics()
@@ -235,14 +249,19 @@ def train_project(project_path, source_model):
                     last_time = current_time
 
             offset.assign_add(slice_size)
-            print(f'Saving checkpoint ... ({datetime.datetime.now()})')
-            manager.save()
 
         used_epoch.assign_add(1)
         random_seed.assign_add(1)
         offset.assign(0)
 
+        print(f'Current Epoch: {used_epoch}')
+
+        if export_model_per_epoch == 0 or (int(used_epoch) % math.ceil(export_model_per_epoch/2)) == 0:
+            print(f'Saving checkpoint ... ({datetime.datetime.now()})')
+            manager.save()
+
         if export_model_per_epoch == 0 or int(used_epoch) % export_model_per_epoch == 0:
+
             print('Saving model ... (per epoch {export_model_per_epoch})')
             export_path = os.path.join(
                 project_path, f'model-{model_type}.h5.e{int(used_epoch)}')
