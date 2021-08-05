@@ -25,6 +25,7 @@ def measure_project(project_path, use_validation):
     scale_range = project_context['scale_range']
     shift_range = project_context['shift_range']
     use_mixed_precision = project_context['mixed_precision'] if 'mixed_precision' in project_context else False
+    # metrics = project_context['metrics']
     # checkpoint_path = os.path.join(project_path, 'checkpoints')
 
     print(f'Loading Optimizer ... ')
@@ -48,10 +49,14 @@ def measure_project(project_path, use_validation):
 
     print(f'Compiling Model ... ')
     model.compile(optimizer=optimizer, loss=tf.keras.losses.BinaryCrossentropy(),
-                  metrics=[
+                  metrics=
+                   [
                       tf.keras.metrics.Precision(),
                       tf.keras.metrics.Recall(),
-                      tf.keras.metrics.BinaryCrossentropy()
+                      tf.keras.metrics.TruePositives(),
+                      tf.keras.metrics.FalsePositives(),
+                      tf.keras.metrics.TrueNegatives(),
+                      tf.keras.metrics.FalseNegatives(),
                     ]
                 )
 
@@ -70,4 +75,29 @@ def measure_project(project_path, use_validation):
     dataset = dataset_wrapper.get_dataset(None).batch(minibatch_size)
 
     results = model.evaluate(dataset)
-    print(f'Loss: {results[0]}, Precision: {results[1]}, Recall: {results[2]}')
+
+    metric_loss = results[0]
+    metric_precision = results[1]
+    metric_recall = results[2]
+    metric_tp = results[3]
+    metric_fp = results[4]
+    metric_tn = results[5]
+    metric_fn = results[6]
+
+    if metric_precision + metric_recall > 0.0:
+        metric_f1_score = 2.0 * \
+            (metric_precision * metric_recall) / \
+            (metric_precision + metric_recall)
+    else:
+        metric_f1_score = 0.0
+
+    print(f"""
+        Loss: {metric_loss:.6f},
+        Precision: {metric_precision:.6f},
+        Recall: {metric_recall:.6f},
+        F1: {metric_f1_score:.6f}
+        TP: {metric_tp},
+        FP: {metric_fp},
+        TN: {metric_tn},
+        FN: {metric_fn},
+    """)

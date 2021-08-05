@@ -126,11 +126,7 @@ def train_project(project_path, source_model):
                   metrics=[
                       tf.keras.metrics.Precision(),
                       tf.keras.metrics.Recall(),
-                    #   tf.keras.metrics.TruePositives(),
-                    #   tf.keras.metrics.FalsePositives(),
-                    #   tf.keras.metrics.TrueNegatives(),
-                    #   tf.keras.metrics.FalseNegatives()
-                    #   tf.keras.metrics.SpecificityAtSensitivity(0.8)
+                      tf.keras.metrics.BinaryCrossentropy()
                     ]
                 )
 
@@ -218,6 +214,7 @@ def train_project(project_path, source_model):
                     delta_time = current_time - last_time
                     step_metric_precision = step_result[1]
                     step_metric_recall = step_result[2]
+                    step_metric_accuracy = step_result[3]
                     step_metric_true_positives = 0 # step_result[1]
                     step_metric_false_positives = 0 # step_result[4]
                     step_metric_true_negatives = 0 # step_result[5]
@@ -239,7 +236,7 @@ def train_project(project_path, source_model):
                     eta_datetime_string = eta_datetime.strftime(
                         '%Y-%m-%d %H:%M:%S')
                     print(
-                        f'Epoch[{int(used_epoch)}] Loss={average_loss:.6f}, P={step_metric_precision:.6f}, R={step_metric_recall:.6f}, TP={step_metric_true_positives:.6f}, FP={step_metric_false_positives:.6f}, TN={step_metric_true_negatives:.6f} FN={step_metric_false_negatives:.6f}, F1={step_metric_f1_score:.6f}, Speed = {samples_per_seconds:.1f} samples/s, {progress:.2f} %, ETA = {eta_datetime_string}')
+                        f'Epoch[{int(used_epoch)}] Loss={average_loss:.6f}, P={step_metric_precision:.6f}, R={step_metric_recall:.6f}, A={step_metric_accuracy}, TP={step_metric_true_positives:.6f}, FP={step_metric_false_positives:.6f}, TN={step_metric_true_negatives:.6f} FN={step_metric_false_negatives:.6f}, F1={step_metric_f1_score:.6f}, Speed = {samples_per_seconds:.1f} samples/s, {progress:.2f} %, ETA = {eta_datetime_string}')
 
                     # reset for next logging
                     model.reset_metrics()
@@ -269,6 +266,9 @@ def train_project(project_path, source_model):
 
             if use_mixed_precision:
                 export_model_as_float32(model_float32, checkpoint_path, export_path + '.float32.h5')
+
+    print(f'Saving checkpoint ... ({datetime.datetime.now()})')
+    manager.save()
 
     print('Saving model ...')
     model_path = os.path.join(
