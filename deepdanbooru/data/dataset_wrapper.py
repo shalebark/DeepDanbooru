@@ -27,7 +27,8 @@ class DatasetWrapper:
         dataset = dataset.apply(tf.data.experimental.ignore_errors())
         dataset = dataset.map(
             self.map_transform_image_and_label, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-        dataset = dataset.batch(minibatch_size)
+        if minibatch_size is not None:
+            dataset = dataset.batch(minibatch_size)
         dataset = dataset.prefetch(
             buffer_size=tf.data.experimental.AUTOTUNE)
         # dataset = dataset.apply(

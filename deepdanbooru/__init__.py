@@ -6,3 +6,4 @@ import deepdanbooru.io
 import deepdanbooru.model
 import deepdanbooru.project
 import deepdanbooru.train
+import deepdanbooru.metrics
