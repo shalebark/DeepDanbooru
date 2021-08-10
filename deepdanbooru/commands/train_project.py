@@ -126,7 +126,6 @@ def train_project(project_path, source_model):
                   metrics=[
                       tf.keras.metrics.Precision(),
                       tf.keras.metrics.Recall(),
-                      tf.keras.metrics.BinaryCrossentropy()
                     ]
                 )
 
@@ -193,7 +192,7 @@ def train_project(project_path, source_model):
                            for image_record in image_records_slice]
 
             dataset_wrapper = dd.data.DatasetWrapper(
-                (image_paths, tag_strings), tags, width, height, scale_range=scale_range, rotation_range=rotation_range, shift_range=shift_range)
+                (image_paths, tag_strings), tags, width, height, scale_range=scale_range, rotation_range=rotation_range, shift_range=shift_range, use_augmentation=True)
             dataset = dataset_wrapper.get_dataset(minibatch_size)
 
             for (x_train, y_train) in dataset:
@@ -214,7 +213,7 @@ def train_project(project_path, source_model):
                     delta_time = current_time - last_time
                     step_metric_precision = step_result[1]
                     step_metric_recall = step_result[2]
-                    step_metric_accuracy = step_result[3]
+                    step_metric_accuracy = 0 # step_result[3]
                     step_metric_true_positives = 0 # step_result[1]
                     step_metric_false_positives = 0 # step_result[4]
                     step_metric_true_negatives = 0 # step_result[5]
