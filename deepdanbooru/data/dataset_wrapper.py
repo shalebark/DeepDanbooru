@@ -11,7 +11,7 @@ class DatasetWrapper:
     Wrapper class for data pipelining/augmentation.
     """
 
-    def __init__(self, inputs, tags, width, height, scale_range, rotation_range, shift_range):
+    def __init__(self, inputs, tags, width, height, scale_range, rotation_range, shift_range, use_augmentation=False):
         self.inputs = inputs
         self.width = width
         self.height = height
@@ -19,6 +19,7 @@ class DatasetWrapper:
         self.rotation_range = rotation_range
         self.shift_range = shift_range
         self.tag_all_array = np.array(tags)
+        self.use_augmentation = use_augmentation
 
     def get_dataset(self, minibatch_size):
         dataset = tf.data.Dataset.from_tensor_slices(self.inputs)
@@ -27,7 +28,8 @@ class DatasetWrapper:
         dataset = dataset.apply(tf.data.experimental.ignore_errors())
         dataset = dataset.map(
             self.map_transform_image_and_label, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-        dataset = dataset.batch(minibatch_size)
+        if minibatch_size is not None:
+            dataset = dataset.batch(minibatch_size)
         dataset = dataset.prefetch(
             buffer_size=tf.data.experimental.AUTOTUNE)
         # dataset = dataset.apply(
@@ -58,6 +60,8 @@ class DatasetWrapper:
         # transform image
         image = image.numpy()
 
+        # start of scaling
+
         if self.scale_range:
             scale = random.uniform(
                 self.scale_range[0], self.scale_range[1]) * (1.0 / self.scale_range[1])
@@ -84,6 +88,11 @@ class DatasetWrapper:
             rotation=rotation,
             scale=scale,
             shift=shift)
+
+        # augmentations
+        if self.use_augmentation:
+            aug = dd.image.augment()
+            image = aug(image=image.astype(np.uint8)).astype(np.float32)
 
         image = image / 255.0  # normalize to 0~1
         # image = image.astype(np.float32)

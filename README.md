@@ -7,12 +7,14 @@
 
 ## Requirements
 DeepDanbooru is written by Python 3.6. Following packages are need to be installed.
-- tensorflow>=2.3.1
+- tensorflow==2.3.1
+- tensorflow_addons==0.13.0
 - Click>=7.0
 - numpy>=1.16.2
 - requests>=2.22.0
 - scikit-image>=0.15.0
 - six>=1.13.0
+- typeguard==2.12.1
 
 Or just use `requirements.txt`.
 ```

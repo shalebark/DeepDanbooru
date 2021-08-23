@@ -14,4 +14,4 @@ __pycache__/
 *.h5
 *.txt
 *.json
-*.egg-info
+*.egg-info/

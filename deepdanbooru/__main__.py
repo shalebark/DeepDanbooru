@@ -90,5 +90,11 @@ def evaluate(target_paths, project_path, model_path, tags_path, threshold, allow
 def add_images_to_project(project_path, tags_path):
     dd.commands.add_images_to_project(project_path, tags_path)
 
+@main.command('measure-project')
+@click.argument('project_path', type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True))
+@click.option('--use-validation', is_flag=True, default=False)
+def measure_project(project_path, use_validation):
+    dd.commands.measure_project(project_path, use_validation)
+
 if __name__ == '__main__':
     main()
