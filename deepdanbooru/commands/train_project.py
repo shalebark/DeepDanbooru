@@ -202,6 +202,8 @@ def train_project(project_path, source_model):
                 loss_sum += step_result[0]
                 loss_count += 1
 
+                print(f'Processing minibatch: {int(used_minibatch)}')
+                
                 if int(used_minibatch) % console_logging_frequency_mb == 0:
                     # calculate logging informations
                     current_time = time.time()
