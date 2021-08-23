@@ -1,6 +1,28 @@
 import os
 import sqlite3
 
+def make_posts_table(con, cur):
+    table_name = 'posts'
+    id_column_name = 'id'
+    md5_column_name = 'md5'
+    extension_column_name = 'file_ext'
+    tags_column_name = 'tag_string'
+    tag_count_general_column_name = 'tag_count_general'
+    rating_column_name = 'rating'
+    score_column_name = 'score'
+    deleted_column_name = 'is_deleted'
+    validation_column_name = 'validation'
+
+    cur.execute(f"""CREATE TABLE {table_name} (
+        {id_column_name} INTEGER NOT NULL PRIMARY KEY,
+        {md5_column_name} TEXT,
+        {extension_column_name} TEXT,
+        {tags_column_name} TEXT,
+        {tag_count_general_column_name} INTEGER ,
+        {validation_column_name} BOOLEAN DEFAULT 0
+    )
+    """)
+    con.commit()
 
 def make_training_database(source_path, output_path, start_id, end_id,
                            use_deleted, chunk_size, overwrite, vacuum):
@@ -36,13 +58,7 @@ def make_training_database(source_path, output_path, start_id, end_id,
 
     # Create output table
     print('Creating table ...')
-    output_cursor.execute(f"""CREATE TABLE {table_name} (
-        {id_column_name} INTEGER NOT NULL PRIMARY KEY,
-        {md5_column_name} TEXT,
-        {extension_column_name} TEXT,
-        {tags_column_name} TEXT,
-        {tag_count_general_column_name} INTEGER )""")
-    output_connection.commit()
+    make_posts_table(output_connection, output_cursor)
     print('Creating table is complete.')
 
     current_start_id = start_id

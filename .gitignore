@@ -1,5 +1,6 @@
 .vs/
 .vscode/
+*.code-workspace
 __pycache__/
 # /test*
 # test.py
@@ -13,3 +14,4 @@ __pycache__/
 *.h5
 *.txt
 *.json
+*.egg-info
