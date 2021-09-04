@@ -19,7 +19,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_validation=False):
     image_folder_path = os.path.join(os.path.dirname(sqlite_path), 'images')
 
     cursor.execute(
-        "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (tag_count_general >= ?) AND `validation` = ? ORDER BY id",
+        "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (tag_count_general >= ?) AND `is_deleted` = 0 AND `validation` = ? ORDER BY id",
         (minimum_tag_count, 1 if use_validation else 0 ))
 
     rows = cursor.fetchall()

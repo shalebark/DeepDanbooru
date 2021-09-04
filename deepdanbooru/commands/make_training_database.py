@@ -1,24 +1,26 @@
 import os
 import sqlite3
+from pathlib import Path
+
+table_name = 'posts'
+id_column_name = 'id'
+md5_column_name = 'md5'
+extension_column_name = 'file_ext'
+tags_column_name = 'tag_string'
+tag_count_general_column_name = 'tag_count_general'
+rating_column_name = 'rating'
+score_column_name = 'score'
+deleted_column_name = 'is_deleted'
+validation_column_name = 'validation'
 
 def make_posts_table(con, cur):
-    table_name = 'posts'
-    id_column_name = 'id'
-    md5_column_name = 'md5'
-    extension_column_name = 'file_ext'
-    tags_column_name = 'tag_string'
-    tag_count_general_column_name = 'tag_count_general'
-    rating_column_name = 'rating'
-    score_column_name = 'score'
-    deleted_column_name = 'is_deleted'
-    validation_column_name = 'validation'
-
     cur.execute(f"""CREATE TABLE {table_name} (
         {id_column_name} INTEGER NOT NULL PRIMARY KEY,
         {md5_column_name} TEXT,
         {extension_column_name} TEXT,
         {tags_column_name} TEXT,
-        {tag_count_general_column_name} INTEGER ,
+        {tag_count_general_column_name} INTEGER DEFAULT 0,
+        {deleted_column_name} BOOLEAN DEFAULT 0,
         {validation_column_name} BOOLEAN DEFAULT 0
     )
     """)
@@ -45,16 +47,6 @@ def make_training_database(source_path, output_path, start_id, end_id,
     output_connection = sqlite3.connect(output_path)
     output_connection.row_factory = sqlite3.Row
     output_cursor = output_connection.cursor()
-
-    table_name = 'posts'
-    id_column_name = 'id'
-    md5_column_name = 'md5'
-    extension_column_name = 'file_ext'
-    tags_column_name = 'tag_string'
-    tag_count_general_column_name = 'tag_count_general'
-    rating_column_name = 'rating'
-    score_column_name = 'score'
-    deleted_column_name = 'is_deleted'
 
     # Create output table
     print('Creating table ...')
@@ -101,17 +93,6 @@ def make_training_database(source_path, output_path, start_id, end_id,
                 tags += f' rating:questionable'
             elif rating == 'e':
                 tags += f' rating:explicit'
-
-            # if score < -6:
-            #     tags += f' score:very_bad'
-            # elif score >= -6 and score < 0:
-            #     tags += f' score:bad'
-            # elif score >= 0 and score < 7:
-            #     tags += f' score:average'
-            # elif score >= 7 and score < 13:
-            #     tags += f' score:good'
-            # elif score >= 13:
-            #     tags += f' score:very_good'
 
             insert_params.append(
                 (post_id, md5, extension, tags, general_tag_count))

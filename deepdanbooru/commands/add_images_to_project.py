@@ -4,6 +4,7 @@ from pathlib import Path
 import deepdanbooru as dd
 import shutil
 import sqlite3
+from .make_training_database import md5_column_name, extension_column_name, tags_column_name, tag_count_general_column_name
 
 def parse_tags(lines):
   return [
@@ -49,8 +50,11 @@ def add_images_to_project(project_path, tag_file):
       continue
 
     pth = Path(dst_path)
-    dbcur.execute('INSERT INTO `posts` (`md5`, `file_ext`, `tag_string`, `tag_count_general`) VALUES (?, ?, ?, ?);', (pth.stem, pth.suffix[1:], ddt[1], len(ddt[1].split(' '))))
+    dbcur.execute(f"""
+      INSERT INTO `posts`
+      (`{md5_column_name}`, `{extension_column_name}`, `{tags_column_name}`, `{tag_count_general_column_name}`)
+      VALUES (?, ?, ?, ?);
+    """, (pth.stem, pth.suffix[1:], ddt[1], len(ddt[1].split(' '))))
 
   dbcon.commit()
   dbcon.close()
-
