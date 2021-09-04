@@ -21,6 +21,10 @@ DEFAULT_PROJECT_CONTEXT = {
     'mixed_precision': False
 }
 
+def load_context_from_project(project_path):
+    project_context_path = os.path.join(project_path, 'project.json')
+    project_context = dd.io.deserialize_from_json(project_context_path)
+    return project_context
 
 def load_project(project_path):
     project_context_path = os.path.join(project_path, 'project.json')

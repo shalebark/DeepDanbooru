@@ -1,8 +1,9 @@
 .vs/
 .vscode/
+*.code-workspace
 __pycache__/
-/test*
-test.py
+# /test*
+# test.py
 /logs
 /uploads
 *.jpg
