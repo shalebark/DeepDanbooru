@@ -113,5 +113,33 @@ def test_add_images_to_project():
     result = list(cur.execute("SELECT * FROM `posts`"))
     con.close()
 
-    assert result == [(1, 'ebffef8cba3ea86f0149626a579a6b2e', 'jpg', 'tag1 tag2', 2, 0)]
+    assert result == [(1, 'ebffef8cba3ea86f0149626a579a6b2e', 'jpg', 'tag1 tag2', 2, 0, 0)]
     assert [p for p in Path('project_path/images').glob('**/*') if p.is_file()] == [Path('project_path/images/eb/ebffef8cba3ea86f0149626a579a6b2e.jpg')]
+
+# def test_make_database_from_tag_file():
+#   runner = CliRunner()
+
+#   with runner.isolated_filesystem():
+#     tags = """
+#     file1.jpg\ttag1 tag2
+#     """
+#     data = parse_tags(tags)
+#     for ddt in data:
+#       with open(ddt[0], 'w') as f:
+#         f.write(ddt[1])
+
+#     with open('tags.txt', 'w') as f:
+#       f.write(tags)
+
+#     dd.commands.create_project('test_project')
+#     dd.commands.create_database_from_tag_file('test_project', 'tags.txt')
+#     project_context = dd.project.load_context_from_project('test_project')
+#     database_path = project_context['database_path']
+
+#     con = sqlite3.connect(database_path)
+#     cur = con.cursor()
+#     result = list(cur.execute("SELECT * FROM `posts`"))
+#     con.close()
+
+#     assert result == [(1, 'ebffef8cba3ea86f0149626a579a6b2e', 'jpg', 'tag1 tag2', 2, 0, 0)]
+#     assert [p for p in Path('project_path/images').glob('**/*') if p.is_file()] == [Path('project_path/images/eb/ebffef8cba3ea86f0149626a579a6b2e.jpg')]

@@ -7,3 +7,4 @@ from .evaluate_project import evaluate_project
 from .grad_cam import grad_cam
 from .evaluate import evaluate, evaluate_image
 from .add_images_to_project import parse_tags, read_tag_file, copy_image_to_project, add_images_to_project
+from .toggle_project_images import toggle_project_images_randomly

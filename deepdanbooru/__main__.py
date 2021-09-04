@@ -96,5 +96,15 @@ def add_images_to_project(project_path, tags_path):
 def measure_project(project_path, use_validation):
     dd.commands.measure_project(project_path, use_validation)
 
+@main.group()
+def utils():
+    pass
+
+# @utils.command('set-enabled')
+# @click.argument('project_path', type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True))
+# @click.argument('number', type=int)
+# def set_enabled(project_path, use_validation)
+
+
 if __name__ == '__main__':
     main()
