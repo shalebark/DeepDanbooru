@@ -195,6 +195,7 @@ def train_project(project_path, source_model):
                 (image_paths, tag_strings), tags, width, height, scale_range=scale_range, rotation_range=rotation_range, shift_range=shift_range, use_augmentation=True)
             dataset = dataset_wrapper.get_dataset(minibatch_size)
 
+            minibatch_start_time = time.time()
             for (x_train, y_train) in dataset:
                 sample_count = x_train.shape[0]
 
@@ -207,8 +208,9 @@ def train_project(project_path, source_model):
                 loss_sum += step_result[0]
                 loss_count += 1
 
-                print(f'Processing minibatch: {int(used_minibatch)}')
-                
+                print(f'Processed minibatch: {int(used_minibatch)} (process time: {time.time() - minibatch_start_time} seconds)')
+                minibatch_start_time = time.time()
+
                 if int(used_minibatch) % console_logging_frequency_mb == 0:
                     # calculate logging informations
                     current_time = time.time()
